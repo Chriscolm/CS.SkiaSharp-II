@@ -1,0 +1,13 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net5.0</TargetFramework>
+    <AssemblyName>CS.SkiaSharpExample.Renderer.Contracts</AssemblyName>
+    <RootNamespace>CS.SkiaSharpExample.Renderer.Contracts</RootNamespace>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\CS.SkiaSharp.Elements.Contracts\CS.SkiaSharpExample.Elements.Contracts.csproj" />
+  </ItemGroup>
+
+</Project>

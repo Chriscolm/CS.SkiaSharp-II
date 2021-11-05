@@ -1,0 +1,78 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.31702.278
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CS.SkiaSharpExample", "CS.SkiaSharp\CS.SkiaSharpExample.csproj", "{0EF7E8AF-A232-43FC-BA12-EB06E6C62CB6}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CS.SkiaSharpExample.Renderer", "CS.SkiaSharp.Renderer\CS.SkiaSharpExample.Renderer.csproj", "{63BAA57A-13B9-4190-8A00-A00C00E1CDC7}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CS.SkiaSharpExample.Renderer.Contracts", "CS.SkiaSharp.Renderer.Contracts\CS.SkiaSharpExample.Renderer.Contracts.csproj", "{D2187757-E72D-477C-AF57-B1F1D849294C}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CS.SkiaSharpExample.Elements.Contracts", "CS.SkiaSharp.Elements.Contracts\CS.SkiaSharpExample.Elements.Contracts.csproj", "{0B78F0A9-5F13-440A-ADEB-60597CF7F11F}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CS.SkiaSharpExample.ViewModels", "CS.SkiaSharp.ViewModels\CS.SkiaSharpExample.ViewModels.csproj", "{AB3DFB62-A818-4E21-8E8F-7282B83DB66B}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{FE55C2D4-2ACF-40C7-AD69-2B4D5331CEC1}"
+	ProjectSection(SolutionItems) = preProject
+		.editorconfig = .editorconfig
+	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CS.SkiaSharpExample.Elements.Manager", "CS.SkiaSharpExample.Elements.Manager\CS.SkiaSharpExample.Elements.Manager.csproj", "{7FC2A112-14D4-4240-BE2C-7E4075B18C68}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CS.SkiaSharpExample.UI.Contracts", "CS.SkiaSharpExample.UI.Contracts\CS.SkiaSharpExample.UI.Contracts.csproj", "{CB33B7BD-DCF4-4925-9A79-B4BA7E6E6ABC}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CS.SkiaSharpExample.Eventbus", "CS.SkiaSharpExample.Eventbus\CS.SkiaSharpExample.Eventbus.csproj", "{0A9969A4-2C86-44D0-93A4-1F7A5F69158F}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CS.SkiaSharpExample.Eventbus.Contracts", "CS.SkiaSharp.Eventbus.Contracts\CS.SkiaSharpExample.Eventbus.Contracts.csproj", "{5E80E8B9-72F2-4246-ABB4-5C666BB73B39}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{0EF7E8AF-A232-43FC-BA12-EB06E6C62CB6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0EF7E8AF-A232-43FC-BA12-EB06E6C62CB6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0EF7E8AF-A232-43FC-BA12-EB06E6C62CB6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0EF7E8AF-A232-43FC-BA12-EB06E6C62CB6}.Release|Any CPU.Build.0 = Release|Any CPU
+		{63BAA57A-13B9-4190-8A00-A00C00E1CDC7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{63BAA57A-13B9-4190-8A00-A00C00E1CDC7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{63BAA57A-13B9-4190-8A00-A00C00E1CDC7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{63BAA57A-13B9-4190-8A00-A00C00E1CDC7}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D2187757-E72D-477C-AF57-B1F1D849294C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D2187757-E72D-477C-AF57-B1F1D849294C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D2187757-E72D-477C-AF57-B1F1D849294C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D2187757-E72D-477C-AF57-B1F1D849294C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0B78F0A9-5F13-440A-ADEB-60597CF7F11F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0B78F0A9-5F13-440A-ADEB-60597CF7F11F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0B78F0A9-5F13-440A-ADEB-60597CF7F11F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0B78F0A9-5F13-440A-ADEB-60597CF7F11F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{AB3DFB62-A818-4E21-8E8F-7282B83DB66B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{AB3DFB62-A818-4E21-8E8F-7282B83DB66B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{AB3DFB62-A818-4E21-8E8F-7282B83DB66B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{AB3DFB62-A818-4E21-8E8F-7282B83DB66B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7FC2A112-14D4-4240-BE2C-7E4075B18C68}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7FC2A112-14D4-4240-BE2C-7E4075B18C68}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7FC2A112-14D4-4240-BE2C-7E4075B18C68}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7FC2A112-14D4-4240-BE2C-7E4075B18C68}.Release|Any CPU.Build.0 = Release|Any CPU
+		{CB33B7BD-DCF4-4925-9A79-B4BA7E6E6ABC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CB33B7BD-DCF4-4925-9A79-B4BA7E6E6ABC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CB33B7BD-DCF4-4925-9A79-B4BA7E6E6ABC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CB33B7BD-DCF4-4925-9A79-B4BA7E6E6ABC}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0A9969A4-2C86-44D0-93A4-1F7A5F69158F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0A9969A4-2C86-44D0-93A4-1F7A5F69158F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0A9969A4-2C86-44D0-93A4-1F7A5F69158F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0A9969A4-2C86-44D0-93A4-1F7A5F69158F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5E80E8B9-72F2-4246-ABB4-5C666BB73B39}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5E80E8B9-72F2-4246-ABB4-5C666BB73B39}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5E80E8B9-72F2-4246-ABB4-5C666BB73B39}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5E80E8B9-72F2-4246-ABB4-5C666BB73B39}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {9DFE5743-074E-49B1-A4B8-AB5E278BFF13}
+	EndGlobalSection
+EndGlobal

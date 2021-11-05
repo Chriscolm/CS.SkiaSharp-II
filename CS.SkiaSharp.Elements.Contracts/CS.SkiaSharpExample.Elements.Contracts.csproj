@@ -1,0 +1,9 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net5.0</TargetFramework>
+    <AssemblyName>CS.SkiaSharpExample.Elements.Contracts</AssemblyName>
+    <RootNamespace>CS.SkiaSharpExample.Elements.Contracts</RootNamespace>
+  </PropertyGroup>
+
+</Project>

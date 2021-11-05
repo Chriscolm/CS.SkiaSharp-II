@@ -1,0 +1,15 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net5.0</TargetFramework>
+    <AssemblyName>CS.SkiaSharpExample.ViewModels</AssemblyName>
+    <RootNamespace>CS.SkiaSharpExample.ViewModels</RootNamespace>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\CS.SkiaSharp.Eventbus.Contracts\CS.SkiaSharpExample.Eventbus.Contracts.csproj" />
+    <ProjectReference Include="..\CS.SkiaSharp.Renderer.Contracts\CS.SkiaSharpExample.Renderer.Contracts.csproj" />
+    <ProjectReference Include="..\CS.SkiaSharpExample.UI.Contracts\CS.SkiaSharpExample.UI.Contracts.csproj" />
+  </ItemGroup>
+
+</Project>

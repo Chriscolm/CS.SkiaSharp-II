@@ -1,0 +1,91 @@
+﻿<UserControl x:Class="CS.SkiaSharpExample.Controls"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:vm="clr-namespace:CS.SkiaSharpExample.ViewModels;assembly=CS.SkiaSharpExample.ViewModels"
+             mc:Ignorable="d" 
+             d:DataContext="{d:DesignInstance Type=vm:ControlsViewModel}"
+             d:DesignHeight="450" d:DesignWidth="1200"
+             Loaded="OnUserControlLoaded">
+    <ToolBarTray>
+        
+        <ToolBar Band="0" BandIndex="0">
+            <Button Content="Create Scene"
+                    Command="{Binding CreateSceneCommand}" />
+            
+            <Button Command="{Binding CreateTriangleCommand}">
+                <StackPanel Orientation="Horizontal">
+                    <Label Content="Draw" />
+                    <TextBox Text="{Binding Settings.Count}" VerticalAlignment="Center" MinWidth="30" />
+                    <Label Content="Triangle(s)" />
+                </StackPanel>
+            </Button>
+
+            <Button Command="{Binding CreateCircleCommand}">
+                <StackPanel Orientation="Horizontal">
+                    <Label Content="Draw Circle with r = " />
+                    <TextBox Text="{Binding Settings.Radius}" VerticalAlignment="Center" MinWidth="30" />
+                </StackPanel>
+            </Button>
+
+            <Button Content="Start Animation" 
+                    Command="{Binding StartAnimationCommand}" />
+
+            <Button Content="Stop Animation"
+                    Command="{Binding StopAnimationCommand}" />
+
+        </ToolBar>
+
+        <ToolBar Band="1" BandIndex="1">
+            
+            <Label Content="Background" />
+            <TextBox Text="{Binding Settings.BackgroundColor, UpdateSourceTrigger=PropertyChanged}" MinWidth="60" />
+
+            <Label Content="Foreground" />
+            <TextBox Text="{Binding Settings.ForegroundColor, UpdateSourceTrigger=PropertyChanged}" MinWidth="60" />
+
+            <Label Content="Stroke Width" />
+            <TextBox Text="{Binding Settings.StrokeWidth, UpdateSourceTrigger=PropertyChanged}" MinWidth="30" />
+
+            <Label Content="Scale" />
+            <TextBox Text="{Binding Settings.Scale, StringFormat=F2, UpdateSourceTrigger=PropertyChanged}" MinWidth="30" />            
+
+        </ToolBar>
+
+        <ToolBar Band="2" BandIndex="2">
+            <Grid>
+                <CheckBox Content="Is Stroke" IsChecked="{Binding Settings.IsStroke, UpdateSourceTrigger=PropertyChanged}" />
+            </Grid>
+
+            <Grid>
+                <CheckBox Content="Render Parallel" IsChecked="{Binding Settings.Parallel, UpdateSourceTrigger=PropertyChanged}" />
+            </Grid>
+
+            <Grid>
+                <CheckBox Content="Antialias" IsChecked="{Binding Settings.IsAntialias, UpdateSourceTrigger=PropertyChanged}" />
+            </Grid>
+
+            <Grid>
+                <CheckBox Content="Centered" IsChecked="{Binding Settings.IsCentered, UpdateSourceTrigger=PropertyChanged}" />
+            </Grid>
+
+            <StackPanel Orientation="Horizontal">
+                <RadioButton Content="Jitter" IsChecked="{Binding Settings.IsJittered, UpdateSourceTrigger=PropertyChanged}" />
+                <RadioButton Content="Dashed" IsChecked="{Binding Settings.IsDashed, UpdateSourceTrigger=PropertyChanged}" />
+                <RadioButton Content="Radial Gradient" IsChecked="{Binding Settings.UseGradient, UpdateSourceTrigger=PropertyChanged}" />
+                <RadioButton Content="Lighting" IsChecked="{Binding Settings.UseLighting, UpdateSourceTrigger=PropertyChanged}" />
+                <RadioButton Content="Clear Effect" IsChecked="{Binding Settings.ClearEffects, UpdateSourceTrigger=PropertyChanged}" />
+            </StackPanel>
+
+        </ToolBar>
+
+        <!--<ToolBar>
+            <Grid>
+                <RadioButton Content="Ich sehe aus wie ein Radiobutton" VerticalAlignment="Center" />
+            </Grid>
+            <RadioButton Content="Ich sehe aus wie ein Toolbar Button" />
+        </ToolBar>-->
+        
+    </ToolBarTray>
+</UserControl>

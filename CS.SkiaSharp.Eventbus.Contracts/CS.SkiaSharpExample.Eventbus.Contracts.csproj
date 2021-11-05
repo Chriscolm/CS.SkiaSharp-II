@@ -1,0 +1,9 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net5.0</TargetFramework>
+    <AssemblyName>CS.SkiaSharpExample.Eventbus.Contracts</AssemblyName>
+    <RootNamespace>CS.SkiaSharpExample.Eventbus.Contracts</RootNamespace>
+  </PropertyGroup>
+
+</Project>
