@@ -10,12 +10,11 @@ namespace CS.SkiaSharpExample.ViewModels
         private readonly ISceneManager _sceneManager;
 
         public double CanvasWidth { get => _canvasWidth; set => SetProperty(ref _canvasWidth, value); }
-
         public double CanvasHeight { get => _canvasHeight; set => SetProperty(ref _canvasHeight, value); }
 
         public CanvasViewModel(IMessageBroker messageBroker, ISceneManager sceneManager) : base(messageBroker)
         {
-            _sceneManager = sceneManager;
+            _sceneManager = sceneManager;            
         }
 
         public void Render(object surface, double surfaceWidth, double surfaceHeight)

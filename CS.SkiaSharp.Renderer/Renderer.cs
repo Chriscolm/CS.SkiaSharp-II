@@ -1,6 +1,7 @@
 ﻿using CS.SkiaSharpExample.Elements.Contracts.Models;
 using CS.SkiaSharpExample.Renderer.Contracts;
 using SkiaSharp;
+using System;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -10,6 +11,7 @@ namespace CS.SkiaSharpExample.Renderer
     {
         private double _width;
         private double _height;
+        private Scene _scene;
 
         public void Render(object surface, double surfaceWidth, double surfaceHeight, Scene scene)
         {
@@ -20,51 +22,71 @@ namespace CS.SkiaSharpExample.Renderer
             {
                 Render(skSurface, scene);
             }
+
+            ColorInfo();
+        }
+
+        private void ColorInfo()
+        {
+            void OutFormat(SKColor c)
+            {
+                System.Diagnostics.Debug.WriteLine($"R: {c.Red} G: { c.Green} B: {c.Blue} A: {c.Alpha}");
+            }
+            //var red = SKColors.Red;            
+            //var green = new SKColor(0, 255, 0, 255);
+            //var blue = new SKColor(0, 0, 255);
+            //SKColor.TryParse("#1000FF00", out var transparentGreen);
+
+            //OutFormat(red);
+            //OutFormat(green);
+            //OutFormat(blue);
+            //OutFormat(transparentGreen);
+
+            var redHsv = SKColor.FromHsv(0, 100, 100);
+            var redHsl = SKColor.FromHsl(0, 100, 50);
+            redHsv.ToHsl(out var h, out var s, out var l);
+            System.Diagnostics.Debug.Assert(h == 0 && s == 100 && l == 50);
+
+            SKColor.TryParse("#7F00FF7", out var c1); // AARRGGB
+            SKColor.TryParse("#7F00FF7F", out var c1a); // AARRGGBB ?
+            SKColor.TryParse("#00FF7F", out var c2); // RRGGBB
+            SKColor.TryParse("A0FA", out var c3); // ARGB
+            SKColor.TryParse("#0FA", out var c4); // RGB
+            //OutFormat(redHsv);
+            
         }
 
         private void Render(SKSurface surface, Scene scene)
         {
             var canvas = surface.Canvas;
 
-            if (scene.Settings.IsCentered)
-            {
-                Center(canvas);
-            }
+            Center(canvas);
 
             if (SKColor.TryParse(scene.Settings.BackgroundColor, out var color))
             {
                 canvas.Clear(color);
             }
-
+            if (scene.Settings.MakeNoise)
+            {
+                RenderPerlinNoise(canvas, scene.Settings);
+            }
             RenderElements(canvas, scene);
         }
 
         private void RenderElements(SKCanvas canvas, Scene scene)
         {
-            var b = SKColor.TryParse(scene.Settings.ForegroundColor, out var color);
-            if (!b)
+            _scene = scene;
+            foreach (var element in scene.Elements)
             {
-                return;
-            }
-            using var paint = CreateDrawPaint(scene, color);
-
-            if (scene.Settings.Parallel)
-            {
-                Parallel.ForEach(scene.Elements, e =>
+                if(SKColor.TryParse(element.Settings.ForegroundColor, out var color))
                 {
-                    RenderElement(canvas, e, scene.Settings, paint);
-                });
-            }
-            else
-            {
-                foreach (var element in scene.Elements)
-                {
+                    using var paint = CreateDrawPaint(scene, element, color);
                     RenderElement(canvas, element, scene.Settings, paint);
                 }
             }
         }
 
-        private void RenderElement(SKCanvas canvas, Element element, Settings settings, SKPaint paint)
+        private void RenderElement(SKCanvas canvas, Element element, GeneralSettings settings, SKPaint paint)
         {
             if (element is Circle circle)
             {
@@ -74,13 +96,17 @@ namespace CS.SkiaSharpExample.Renderer
             {
                 RenderText(canvas, caption, settings);
             }
+            else if (element is BitmapElement)
+            {
+                RenderBitmap(canvas, settings);
+            }
             else
             {
                 RenderAngular(canvas, element, settings, paint);
             }
         }
 
-        private void RenderAngular(SKCanvas canvas, Element element, Settings settings, SKPaint paint)
+        private void RenderAngular(SKCanvas canvas, Element element, GeneralSettings settings, SKPaint paint)
         {
             var points = from q in element.Coordinates
                          let p = Translator.Translate(new SKPoint(q.Xf, q.Yf), _height, settings.Scale)
@@ -90,7 +116,7 @@ namespace CS.SkiaSharpExample.Renderer
             canvas.DrawPath(path, paint);
         }
 
-        private void RenderRounded(SKCanvas canvas, Circle element, Settings settings, SKPaint paint)
+        private void RenderRounded(SKCanvas canvas, Circle element, GeneralSettings settings, SKPaint paint)
         {
             var point = from q in element.Coordinates
                         let p = Translator.Translate(new SKPoint(q.Xf, q.Yf), _height, settings.Scale)
@@ -100,10 +126,10 @@ namespace CS.SkiaSharpExample.Renderer
             canvas.DrawCircle(v, r, paint);
         }
 
-        private void RenderText(SKCanvas canvas, Caption element, Settings settings)
+        private void RenderText(SKCanvas canvas, Caption element, GeneralSettings settings)
         {
             canvas.ResetMatrix();
-            var b = SKColor.TryParse(settings.ForegroundColor, out var color);
+            var b = SKColor.TryParse(element.Settings.ForegroundColor, out var color);
             if (!b)
             {
                 return;
@@ -113,39 +139,46 @@ namespace CS.SkiaSharpExample.Renderer
                         let p = Translator.Translate(new SKPoint(q.Xf, q.Yf), _height, settings.Scale)
                         select p;
             var v = point.Single();
-            canvas.DrawText(element.Text, v, paint);
-            if (settings.IsCentered)
-            {
-                Center(canvas);
-            }            
+            canvas.DrawText(element.Text, v, paint);                     
         }
 
         private void Center(SKCanvas canvas)
         {
-            var x = (float)_width / 2f;
-            var y = (float)_height / 2f;
-            canvas.Translate(x, -y);
+            if (_scene != null)
+            {
+                var coordinates = _scene.Elements.SelectMany(p => p.Coordinates).ToArray();
+                if (!coordinates.Any())
+                {
+                    return;
+                }
+                var minx = coordinates.Min(p => p.Xf);
+                var maxx = coordinates.Max(p => p.Xf);
+                var miny = coordinates.Min(p => p.Yf);
+                var maxy = coordinates.Max(p => p.Yf);
+                var xext = maxx - minx;
+                var yext = maxy - miny;
+                var x = (float)_width / 2f - xext / 2f;
+                var y = (float)_height / 2f - yext / 2f;
+                canvas.Translate(x, -y); 
+            }
         }
 
-        private SKPaint CreateDrawPaint(Scene scene, SKColor color)
-        {
-            using var pathEffect = CreatePathEffect(scene.Settings);
-            using var shader = CreateShader(scene.Settings);
-            using var colorFilter = CreateColorFilter(scene.Settings);
+        private SKPaint CreateDrawPaint(Scene scene, Element element, SKColor color)
+        {            
+            using var highlightShader = CreateRadialSpecularHighlight(element.Settings);
+            using var shadowFilter = CreateShadow(element.Settings);
+            using var blurFilter = CreateBlurFilter(element.Settings);
             return new SKPaint()
             {
-                IsAntialias = scene.Settings.IsAntialias,
-                IsStroke = scene.Settings.IsStroke,
-                StrokeWidth = scene.Settings.StrokeWidth,
-                IsDither = true,
-                Color = color,
-                PathEffect = pathEffect,
-                Shader = shader,
-                ColorFilter = colorFilter
+                IsAntialias = scene.Settings.IsAntialias,                
+                Color = color,                
+                Shader = highlightShader,
+                ImageFilter = shadowFilter,
+                MaskFilter = blurFilter 
             };
         }
 
-        private static SKPaint CreateTextPaint(SKColor color)
+        private static SKPaint CreateTextPaint(SKColor color, float textSize = 20f, float strokeWidth = 2f)
         {
             var contrastConfig = new SKHighContrastConfig()
             {
@@ -156,52 +189,181 @@ namespace CS.SkiaSharpExample.Renderer
             var filter = SKColorFilter.CreateHighContrast(contrastConfig);
             return new SKPaint()
             {
-                TextSize = 20f,
+                TextSize = textSize,
                 IsDither = true,
                 Color = color,
-                ColorFilter = filter
+                ColorFilter = filter,
+                StrokeWidth = strokeWidth,
+                IsStroke = true
             };
         }
-
-        private static SKPathEffect CreatePathEffect(Settings settings)
+                        
+        private SKImageFilter CreateShadow(ElementSettings settings)
         {
-            SKPathEffect effect = null;
-            if (settings.IsJittered)
+            if(settings.UseShadow && SKColor.TryParse(settings.ShadowColor, out var color))
             {
-                effect = SKPathEffect.CreateDiscrete(1, 5f);
+                var dx = 20f * (float)_scene.Settings.Scale;
+                var dy = 15f * (float)_scene.Settings.Scale;
+                var filter = SKImageFilter.CreateDropShadow(dx, dy, 8, 8, color);
+                return filter;
             }
-            else if (settings.IsDashed)
-            {
-                effect = SKPathEffect.CreateDash(new[] { 1f, 2f, 3f, 2f }, 2f);
-            }
-
-            return effect;
+            return null;
         }
 
-        private SKShader CreateShader(Settings settings)
+        private SKShader CreateRadialSpecularHighlight(ElementSettings settings)
         {
-            SKShader shader = null;
-            if (settings.UseGradient)
-            {
-                var p = new SKPoint()
-                {
-                    X = (float)_width / 2f,
-                    Y = (float)_height / 2f
-                };
-                var arr = new[] { SKColors.Green, SKColors.Red, SKColors.Blue, SKColors.Yellow };
-                shader = SKShader.CreateRadialGradient(p, (float)settings.Radius, arr, SKShaderTileMode.Mirror);
+            if (settings.UseHighlight && SKColor.TryParse(settings.ForegroundColor, out var color))
+            {                
+                var scale = (float)_scene.Settings.Scale;
+                var highlightColor = SKColors.AntiqueWhite;
+                var r = (float)(settings.Radius * scale);
+                var p = new SKPoint((float)settings.X - (float)settings.Radius / 2f, 0 - (float)settings.Radius / 2f);
+                var center = Translator.Translate(p, _height, scale);
+                var shader = SKShader.CreateRadialGradient(center, r, new[] { highlightColor, color }, null, SKShaderTileMode.Clamp);
+                return shader;
             }
-            return shader;
+            return null;
+        }                
+
+        private SKMaskFilter CreateBlurFilter(ElementSettings settings)
+        {
+            if (settings.UseBlur && Enum.TryParse<SKBlurStyle>(settings.BlurStyle, out var style))
+            {
+                var sigma = settings.BlurSigma * (float)_scene.Settings.Scale;
+                var filter = SKMaskFilter.CreateBlur(style, sigma);
+                return filter;
+            }
+            return null;
         }
 
-        private static SKColorFilter CreateColorFilter(Settings settings)
+        private void RenderBitmap(SKCanvas canvas, GeneralSettings settings)
         {
-            SKColorFilter colorFilter = null;
-            if (settings.UseLighting && SKColor.TryParse(settings.ForegroundColor, out var color))
+            canvas.ResetMatrix();
+            
+            var resourceId = "CS.SkiaSharpExample.Renderer.neuwerk-quer.jpg";
+            using var resource = GetType().Assembly.GetManifestResourceStream(resourceId);
+            using var codec = SKCodec.Create(resource);
+            using var bmp = SKBitmap.Decode(codec);
+
+            using var grayScalePaint = CreateGrayScale(settings);
+
+            var resized = FitToScreen(bmp);
+            CenterBitmap(canvas, resized.Info.Size);
+            canvas.DrawBitmap(resized, new SKPoint(0, 0), grayScalePaint);
+
+            if (settings.IsClipped)
             {
-                colorFilter = SKColorFilter.CreateLighting(color, SKColors.NavajoWhite);
+                Clip(canvas, resized);
             }
-            return colorFilter;
+
+            if (settings.HasWatermark)
+            {
+                AddWatermark(canvas);
+            }
+        }
+
+        private static SKPaint CreateGrayScale(GeneralSettings settings)
+        {
+            if (!settings.IsGrayScale)
+            {
+                return null;
+            }
+            var matrix = new float[]
+            {
+                0.21f, 0.72f, 0.07f, 0, 0,
+                0.21f, 0.72f, 0.07f, 0, 0,
+                0.21f, 0.72f, 0.07f, 0, 0,
+                0,     0,     0,     1, 0
+            };
+            var paint = new SKPaint
+            {
+                ColorFilter = SKColorFilter.CreateColorMatrix(matrix)
+            };
+            return paint;
+        }
+
+        private static SKPaint CreateRandomScale(GeneralSettings settings)
+        {
+            if (!settings.IsClipped)
+            {
+                return null;
+            }
+            var random = new Random();
+            var r = (float)random.NextDouble();
+            var g = (float)random.NextDouble();
+            var b = (float)random.NextDouble();
+            var matrix = new float[]
+            {
+                r, r, r, 0, 0,
+                g, g, g, 0, 0,
+                b, b, b, 0, 0,
+                0, 0, 0, 1, 0
+            };
+            var paint = new SKPaint
+            {
+                ColorFilter = SKColorFilter.CreateColorMatrix(matrix)
+            };
+            return paint;
+        }
+
+        private SKBitmap FitToScreen(SKBitmap bmp)
+        {
+            var currentWidth = (double)bmp.Width;
+            var currentHeight = (double)bmp.Height;
+            var scale = Math.Min(_width / currentWidth, _height / currentHeight);
+            var info = new SKImageInfo()
+            {
+                Width = (int)(currentWidth * scale),
+                Height = (int)(currentHeight * scale),
+                AlphaType = bmp.Info.AlphaType,
+                ColorSpace = bmp.Info.ColorSpace,
+                ColorType = bmp.Info.ColorType
+            };
+            var fitted = new SKBitmap(info);
+            return bmp.ScalePixels(fitted, SKFilterQuality.Medium) ? fitted : bmp;
+        }
+
+        private void CenterBitmap(SKCanvas canvas, SKSizeI size)
+        {
+            var dx = (float)(_width - size.Width) / 2f;
+            var dy = (float)(_height - size.Height) / 2f;
+            canvas.Translate(dx, dy);
+        }
+
+        private void AddWatermark(SKCanvas canvas)
+        {
+            var x = 10f;
+            var y = (float)_height - 40;
+            using var paint = CreateTextPaint(new SKColor(250, 250, 250, 100), 40, 5);
+            canvas.DrawText("Watermark", new SKPoint(x,y), paint);
+        }
+
+        private static void Clip(SKCanvas canvas, SKBitmap bmp)
+        {
+            var rect = SKRect.Create(0, 0, bmp.Width / 2f, bmp.Height / 2);
+            canvas.ClipRect(rect, SKClipOperation.Intersect, true);
+            canvas.DrawBitmap(bmp, new SKPoint(0, 0), CreateRandomScale(new GeneralSettings() { IsClipped = true }));
+        }
+
+        private void RenderPerlinNoise(SKCanvas canvas, GeneralSettings settings)
+        {
+            canvas.ResetMatrix();
+            using var shader =
+                settings.HasPerlinFractalNoise ?
+                SKShader.CreatePerlinNoiseFractalNoise(settings.PerlinBaseFrequencyX, settings.PerlinBaseFrequencyY, settings.PerlinNumOctaves, DateTime.Now.Ticks) :
+                settings.HasPerlinTurbulenceNoise ?
+                SKShader.CreatePerlinNoiseTurbulence(settings.PerlinBaseFrequencyX, settings.PerlinBaseFrequencyY, settings.PerlinNumOctaves, DateTime.Now.Ticks) :
+                null;
+            if(shader == null)
+            {
+                return;
+            }
+            using var paint = new SKPaint()
+            {
+                IsAntialias = true,
+                Shader = shader,
+            };
+            canvas.DrawRect(0, 0, (float)_width, (float)_height, paint);
         }
     }
 }

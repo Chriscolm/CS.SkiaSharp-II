@@ -20,5 +20,10 @@
             var result = new Vector2D(X + x, Y + y);
             return result;
         }
+
+        public override string ToString()
+        {
+            return $"{X:F2}/{Y:F2}";
+        }
     }
 }

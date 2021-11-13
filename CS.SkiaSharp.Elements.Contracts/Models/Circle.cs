@@ -6,15 +6,21 @@ namespace CS.SkiaSharpExample.Elements.Contracts.Models
     {
         public double Radius { get; private set; }
 
-        public static Circle Create(double radius)
+        public static Circle Create(ElementSettings elementSettings)
         {
-            var vector = new Vector2D(0, 0);
+            var vector = new Vector2D(elementSettings.X, 0);
             var result = new Circle()
             {
-                Radius = radius
+                Settings = elementSettings,
+                Radius = elementSettings.Radius
             };
             result.AddCoordinates(vector);
             return result;
+        }
+
+        public override string ToString()
+        {
+            return $"{string.Join(" | ", Coordinates)} r = {Radius}";
         }
     }
 }

@@ -11,81 +11,95 @@
     <ToolBarTray>
         
         <ToolBar Band="0" BandIndex="0">
-            <Button Content="Create Scene"
-                    Command="{Binding CreateSceneCommand}" />
-            
-            <Button Command="{Binding CreateTriangleCommand}">
-                <StackPanel Orientation="Horizontal">
-                    <Label Content="Draw" />
-                    <TextBox Text="{Binding Settings.Count}" VerticalAlignment="Center" MinWidth="30" />
-                    <Label Content="Triangle(s)" />
-                </StackPanel>
-            </Button>
-
-            <Button Command="{Binding CreateCircleCommand}">
-                <StackPanel Orientation="Horizontal">
-                    <Label Content="Draw Circle with r = " />
-                    <TextBox Text="{Binding Settings.Radius}" VerticalAlignment="Center" MinWidth="30" />
-                </StackPanel>
-            </Button>
-
-            <Button Content="Start Animation" 
-                    Command="{Binding StartAnimationCommand}" />
-
-            <Button Content="Stop Animation"
-                    Command="{Binding StopAnimationCommand}" />
-
-        </ToolBar>
-
-        <ToolBar Band="1" BandIndex="1">
-            
             <Label Content="Background" />
             <TextBox Text="{Binding Settings.BackgroundColor, UpdateSourceTrigger=PropertyChanged}" MinWidth="60" />
 
-            <Label Content="Foreground" />
-            <TextBox Text="{Binding Settings.ForegroundColor, UpdateSourceTrigger=PropertyChanged}" MinWidth="60" />
-
-            <Label Content="Stroke Width" />
-            <TextBox Text="{Binding Settings.StrokeWidth, UpdateSourceTrigger=PropertyChanged}" MinWidth="30" />
-
             <Label Content="Scale" />
-            <TextBox Text="{Binding Settings.Scale, StringFormat=F2, UpdateSourceTrigger=PropertyChanged}" MinWidth="30" />            
-
-        </ToolBar>
-
-        <ToolBar Band="2" BandIndex="2">
-            <Grid>
-                <CheckBox Content="Is Stroke" IsChecked="{Binding Settings.IsStroke, UpdateSourceTrigger=PropertyChanged}" />
-            </Grid>
-
-            <Grid>
-                <CheckBox Content="Render Parallel" IsChecked="{Binding Settings.Parallel, UpdateSourceTrigger=PropertyChanged}" />
-            </Grid>
+            <TextBox Text="{Binding Settings.Scale, StringFormat=F2, UpdateSourceTrigger=PropertyChanged}" MinWidth="30" />
 
             <Grid>
                 <CheckBox Content="Antialias" IsChecked="{Binding Settings.IsAntialias, UpdateSourceTrigger=PropertyChanged}" />
             </Grid>
 
-            <Grid>
-                <CheckBox Content="Centered" IsChecked="{Binding Settings.IsCentered, UpdateSourceTrigger=PropertyChanged}" />
-            </Grid>
+            <Button Content="Create Scene"
+                    Command="{Binding CreateSceneCommand}" />
 
-            <StackPanel Orientation="Horizontal">
-                <RadioButton Content="Jitter" IsChecked="{Binding Settings.IsJittered, UpdateSourceTrigger=PropertyChanged}" />
-                <RadioButton Content="Dashed" IsChecked="{Binding Settings.IsDashed, UpdateSourceTrigger=PropertyChanged}" />
-                <RadioButton Content="Radial Gradient" IsChecked="{Binding Settings.UseGradient, UpdateSourceTrigger=PropertyChanged}" />
-                <RadioButton Content="Lighting" IsChecked="{Binding Settings.UseLighting, UpdateSourceTrigger=PropertyChanged}" />
-                <RadioButton Content="Clear Effect" IsChecked="{Binding Settings.ClearEffects, UpdateSourceTrigger=PropertyChanged}" />
-            </StackPanel>
+            <Button Content="Draw Circles"
+                    Command="{Binding CreateCirclesCommand}" />
 
         </ToolBar>
 
-        <!--<ToolBar>
-            <Grid>
-                <RadioButton Content="Ich sehe aus wie ein Radiobutton" VerticalAlignment="Center" />
-            </Grid>
-            <RadioButton Content="Ich sehe aus wie ein Toolbar Button" />
-        </ToolBar>-->
+        <ToolBar Band="1" BandIndex="1">
+            <ItemsControl ItemsSource="{Binding ElementSettings}">
+                <ItemsControl.ItemsPanel>
+                    <ItemsPanelTemplate>
+                        <StackPanel />
+                    </ItemsPanelTemplate>
+                </ItemsControl.ItemsPanel>
+                <ItemsControl.ItemTemplate>
+                    <DataTemplate>
+                        <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                            <Label Content="Radius" />
+                            <TextBox Text="{Binding Radius, UpdateSourceTrigger=PropertyChanged}" MinWidth="30" VerticalAlignment="Center" />
+                            <Label Content="Foreground" />
+                            <TextBox Text="{Binding ForegroundColor, UpdateSourceTrigger=PropertyChanged}" MinWidth="60" VerticalAlignment="Center" />
+                            <CheckBox IsChecked="{Binding UseShadow, UpdateSourceTrigger=PropertyChanged}">
+                                <StackPanel Orientation="Horizontal">
+                                    <TextBlock Text="Shadow" />
+                                    <TextBox Text="{Binding ShadowColor, UpdateSourceTrigger=PropertyChanged}" MinWidth="80" />
+                                </StackPanel>
+                            </CheckBox>
+                            <CheckBox IsChecked="{Binding UseHighlight, UpdateSourceTrigger=PropertyChanged}">
+                                Highlight
+                            </CheckBox>
+                            <CheckBox IsChecked="{Binding UseBlur, UpdateSourceTrigger=PropertyChanged}">
+                                <StackPanel Orientation="Horizontal">
+                                    <TextBlock Text="Blur" />
+                                    <TextBlock Text="Sigma" />
+                                    <TextBox Text="{Binding BlurSigma, UpdateSourceTrigger=PropertyChanged}" MinWidth="30" />
+                                    <TextBlock Text="Style" />
+                                    <ComboBox ItemsSource="{Binding BlurStyles}" SelectedValue="{Binding BlurStyle}" MinWidth="80">
+                                        
+                                    </ComboBox>
+                                </StackPanel>
+                            </CheckBox>
+                        </StackPanel>                        
+                    </DataTemplate>
+                </ItemsControl.ItemTemplate>
+            </ItemsControl>
+                      
+
+        </ToolBar>
+
+        <ToolBar Band="2" BandIndex="2">
+            <Button Command="{Binding LoadBitmapCommand}"
+                    Content="Load Bitmap" />
+            <Button Command="{Binding BitmapToGrayscaleCommand}"
+                    Content="Black and White" />
+            <Button Command="{Binding AddWatermarkCommand}"
+                    Content="Add Watermark" />
+            <Button Command="{Binding ClipCommand}"
+                    Content="Clip Rect/Random Color Filter" />
+        </ToolBar>
+
+        <ToolBar Band="3" BandIndex="3">
+            <ToggleButton Command="{Binding MakePerlinNoiseCommand}"
+                          Content="Make Perlin Noise" />
+            <StackPanel Orientation="Horizontal"
+                        VerticalAlignment="Center">
+                <RadioButton IsChecked="{Binding Settings.HasPerlinFractalNoise, UpdateSourceTrigger=PropertyChanged}"
+                             Content="Fractal" />
+                <RadioButton IsChecked="{Binding Settings.HasPerlinTurbulenceNoise, UpdateSourceTrigger=PropertyChanged}"
+                             Content="Turbulence" />
+            </StackPanel>
+            <Label Content="Base Frequency X" />
+            <Slider Minimum="0.001" Maximum="4" Width="150" Value="{Binding Settings.PerlinBaseFrequencyX, UpdateSourceTrigger=PropertyChanged}" />
+            <Label Content="Base Frequency Y" />
+            <Slider Minimum="0.001" Maximum="4" Width="150" Value="{Binding Settings.PerlinBaseFrequencyY, UpdateSourceTrigger=PropertyChanged}" />
+            <Label Content="Octaves" />
+            <Slider Minimum="1" Maximum="20" Width="150" Value="{Binding Settings.PerlinNumOctaves, UpdateSourceTrigger=PropertyChanged}" />
+
+        </ToolBar>
         
     </ToolBarTray>
 </UserControl>

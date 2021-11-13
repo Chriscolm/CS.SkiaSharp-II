@@ -3,7 +3,7 @@ using CS.SkiaSharpExample.Elements.Contracts.Models;
 using CS.SkiaSharpExample.Eventbus.Contracts;
 using CS.SkiaSharpExample.Eventbus.Contracts.Events;
 using CS.SkiaSharpExample.UI.Contracts;
-using System.Threading.Tasks;
+using System.Collections.Generic;
 using System.Windows.Input;
 
 namespace CS.SkiaSharpExample.ViewModels
@@ -11,27 +11,54 @@ namespace CS.SkiaSharpExample.ViewModels
     public class ControlsViewModel : ViewModel
     {
         private readonly ISceneManager _sceneManager;
-        private readonly Settings _settings;
+        private readonly GeneralSettings _settings;
+        private readonly ElementSettings _leftCircleSettings;
+        private readonly ElementSettings _rightCircleSettings;
         private ICommand _createSceneCommand;
-        private ICommand _createTriangleCommand;
-        private ICommand _createCircleCommand;
-        private ICommand _startAnimationCommand;
-        private ICommand _stopAnimationCommand;
+        private ICommand _createCirclesCommand;
+        private ICommand _loadBitmapCommand;
+        private ICommand _bitmapToGrayscaleCommand;
+        private ICommand _addWatermarkCommand;
+        private ICommand _clipCommand;
+        private ICommand _makePerlinNoiseCommand;
 
-        public Settings Settings => _settings;
+        public GeneralSettings Settings => _settings;
+        public ElementSettings LeftCircleSettings => _leftCircleSettings;
+        public ElementSettings RightCircleSettings => _rightCircleSettings;
+        public IEnumerable<ElementSettings> ElementSettings => new[] { LeftCircleSettings, RightCircleSettings };
         public ICommand CreateSceneCommand => _createSceneCommand ??= new RelayCommand(p => CreateScene());
-        public ICommand CreateTriangleCommand => _createTriangleCommand ??= new RelayCommand(p => CreateTriangle());
-        public ICommand CreateCircleCommand => _createCircleCommand ??= new RelayCommand(p => CreateCircle());
-        public ICommand StartAnimationCommand => _startAnimationCommand ??= new RelayCommand(p => StartAnimation());
-        public ICommand StopAnimationCommand => _stopAnimationCommand ??= new RelayCommand(p => StopAnimation());
+        public ICommand CreateCirclesCommand => _createCirclesCommand ??= new RelayCommand(p => CreateCircles());
+        public ICommand LoadBitmapCommand => _loadBitmapCommand ??= new RelayCommand(LoadBitmap);
+        public ICommand BitmapToGrayscaleCommand => _bitmapToGrayscaleCommand ??= new RelayCommand(BitmapToGrayscale);
+        public ICommand AddWatermarkCommand => _addWatermarkCommand ??= new RelayCommand(AddWatermark);
+        public ICommand ClipCommand => _clipCommand ??= new RelayCommand(Clip);
+        public ICommand MakePerlinNoiseCommand => _makePerlinNoiseCommand ??= new RelayCommand(MakePerlinNoise);
 
         public ControlsViewModel(IMessageBroker messageBroker, ISceneManager sceneManager) : base(messageBroker)
         {
             _sceneManager = sceneManager;
-            _settings = new Settings();
+            _settings = new GeneralSettings() { IsAntialias = true };
             _settings.Changed += () =>
             {
                 SendMessage(_settings, new RenderingRequestedEventArgs());
+            };
+            _leftCircleSettings = new ElementSettings()
+            {
+                Radius = 50,
+                X = 10d
+            };
+            _leftCircleSettings.Changed += () =>
+            {
+                CreateCircles();
+            };
+            _rightCircleSettings = new ElementSettings()
+            {
+                Radius = 50,
+                X = 100d
+            };
+            _rightCircleSettings.Changed += () =>
+            {
+                CreateCircles();
             };
         }
 
@@ -41,26 +68,54 @@ namespace CS.SkiaSharpExample.ViewModels
             SendMessage(this, new RenderingRequestedEventArgs());
         }
 
-        private void CreateTriangle()
+        private void CreateCircles()
         {
-            _sceneManager.CreateTriangle(_settings);
+            _sceneManager.ClearScene();
+            var arr = new[] { _leftCircleSettings, _rightCircleSettings };
+            foreach (var elementSettings in arr)
+            {
+                _sceneManager.CreateCircle(_settings, elementSettings);
+            }
             SendMessage(this, new RenderingRequestedEventArgs());
         }
 
-        private void CreateCircle()
+        private void LoadBitmap(object commandParameter)
         {
-            _sceneManager.CreateCircle(_settings);
+            _settings.IsGrayScale = false;
+            _settings.HasWatermark = false;
+            _settings.HasPerlinFractalNoise = false;
+            _settings.HasPerlinTurbulenceNoise = false;
+            _settings.IsClipped = false;
+            _sceneManager.ClearScene();
+            _sceneManager.CreateScene(_settings);
+            _sceneManager.CreateBitmap(_settings, new ElementSettings());
             SendMessage(this, new RenderingRequestedEventArgs());
         }
 
-        private void StartAnimation()
+        private void BitmapToGrayscale(object commandParameter)
         {
-            Task.Run(async () => await _sceneManager.StartAnimationAsync(_settings));
+            _settings.IsGrayScale = true;
+            SendMessage(this, new RenderingRequestedEventArgs());
         }
 
-        private void StopAnimation()
+        private void AddWatermark(object commandParameter)
         {
-            Task.Run(async () => await _sceneManager.StopAnimationAsync());
+            _settings.HasWatermark = true;
+            SendMessage(this, new RenderingRequestedEventArgs());
+        }
+
+        private void Clip(object commandParameter)
+        {
+            _settings.IsClipped = true;
+            SendMessage(this, new RenderingRequestedEventArgs());
+        }
+
+        private void MakePerlinNoise(object commandParameter)
+        {
+            _sceneManager.ClearScene();
+            _sceneManager.CreateScene(_settings);
+            _settings.MakeNoise = !_settings.MakeNoise;
+            SendMessage(this, new RenderingRequestedEventArgs());
         }
     }
 }
