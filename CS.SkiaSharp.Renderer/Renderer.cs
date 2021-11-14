@@ -3,7 +3,7 @@ using CS.SkiaSharpExample.Renderer.Contracts;
 using SkiaSharp;
 using System;
 using System.Linq;
-using System.Threading.Tasks;
+using System.Reflection;
 
 namespace CS.SkiaSharpExample.Renderer
 {
@@ -21,17 +21,17 @@ namespace CS.SkiaSharpExample.Renderer
             if (surface is SKSurface skSurface)
             {
                 Render(skSurface, scene);
+                AutoSave(skSurface, scene.Settings);
             }
-
             ColorInfo();
         }
 
         private void ColorInfo()
         {
-            void OutFormat(SKColor c)
-            {
-                System.Diagnostics.Debug.WriteLine($"R: {c.Red} G: { c.Green} B: {c.Blue} A: {c.Alpha}");
-            }
+            //void OutFormat(SKColor c)
+            //{
+            //    System.Diagnostics.Debug.WriteLine($"R: {c.Red} G: { c.Green} B: {c.Blue} A: {c.Alpha}");
+            //}
             //var red = SKColors.Red;            
             //var green = new SKColor(0, 255, 0, 255);
             //var blue = new SKColor(0, 0, 255);
@@ -42,16 +42,16 @@ namespace CS.SkiaSharpExample.Renderer
             //OutFormat(blue);
             //OutFormat(transparentGreen);
 
-            var redHsv = SKColor.FromHsv(0, 100, 100);
-            var redHsl = SKColor.FromHsl(0, 100, 50);
-            redHsv.ToHsl(out var h, out var s, out var l);
-            System.Diagnostics.Debug.Assert(h == 0 && s == 100 && l == 50);
+            //var redHsv = SKColor.FromHsv(0, 100, 100);
+            //var redHsl = SKColor.FromHsl(0, 100, 50);
+            //redHsv.ToHsl(out var h, out var s, out var l);
+            //System.Diagnostics.Debug.Assert(h == 0 && s == 100 && l == 50);
 
-            SKColor.TryParse("#7F00FF7", out var c1); // AARRGGB
-            SKColor.TryParse("#7F00FF7F", out var c1a); // AARRGGBB ?
-            SKColor.TryParse("#00FF7F", out var c2); // RRGGBB
-            SKColor.TryParse("A0FA", out var c3); // ARGB
-            SKColor.TryParse("#0FA", out var c4); // RGB
+            //SKColor.TryParse("#7F00FF7", out var c1); // AARRGGB !funzt net
+            //SKColor.TryParse("#7F00FF7F", out var c1a); // AARRGGBB
+            //SKColor.TryParse("#00FF7F", out var c2); // RRGGBB
+            //SKColor.TryParse("A0FA", out var c3); // ARGB
+            //SKColor.TryParse("#0FA", out var c4); // RGB
             //OutFormat(redHsv);
             
         }
@@ -81,7 +81,7 @@ namespace CS.SkiaSharpExample.Renderer
                 if(SKColor.TryParse(element.Settings.ForegroundColor, out var color))
                 {
                     using var paint = CreateDrawPaint(scene, element, color);
-                    RenderElement(canvas, element, scene.Settings, paint);
+                    RenderElement(canvas, element, scene.Settings, paint);                    
                 }
             }
         }
@@ -165,7 +165,7 @@ namespace CS.SkiaSharpExample.Renderer
 
         private SKPaint CreateDrawPaint(Scene scene, Element element, SKColor color)
         {            
-            using var highlightShader = CreateRadialSpecularHighlight(element.Settings);
+            using var highlightShader = CreateHighlight(element.Settings);
             using var shadowFilter = CreateShadow(element.Settings);
             using var blurFilter = CreateBlurFilter(element.Settings);
             return new SKPaint()
@@ -210,7 +210,7 @@ namespace CS.SkiaSharpExample.Renderer
             return null;
         }
 
-        private SKShader CreateRadialSpecularHighlight(ElementSettings settings)
+        private SKShader CreateHighlight(ElementSettings settings)
         {
             if (settings.UseHighlight && SKColor.TryParse(settings.ForegroundColor, out var color))
             {                
@@ -219,9 +219,9 @@ namespace CS.SkiaSharpExample.Renderer
                 var r = (float)(settings.Radius * scale);
                 var p = new SKPoint((float)settings.X - (float)settings.Radius / 2f, 0 - (float)settings.Radius / 2f);
                 var center = Translator.Translate(p, _height, scale);
-                var shader = SKShader.CreateRadialGradient(center, r, new[] { highlightColor, color }, null, SKShaderTileMode.Clamp);
+                var shader = SKShader.CreateRadialGradient(center, r, new[] { highlightColor, color }, null , SKShaderTileMode.Clamp);
                 return shader;
-            }
+            }           
             return null;
         }                
 
@@ -364,6 +364,30 @@ namespace CS.SkiaSharpExample.Renderer
                 Shader = shader,
             };
             canvas.DrawRect(0, 0, (float)_width, (float)_height, paint);
+        }
+
+        private static void AutoSave(SKSurface surface, GeneralSettings settings)
+        {
+            if (!settings.AutoSave)
+            {
+                return;
+            }
+            try
+            {
+                var snapshot = surface.Snapshot();
+                var png = snapshot.Encode(SKEncodedImageFormat.Png, 100);
+                var stream = png.AsStream(streamDisposesData: false);
+
+                var path = Assembly.GetExecutingAssembly().Location;
+                var random = System.IO.Path.GetRandomFileName();
+                var filepath = System.IO.Path.Combine(new System.IO.FileInfo(path).DirectoryName, $"dnp-skiasharp-example.{random}.png");
+                using var fs = new System.IO.FileStream(filepath, System.IO.FileMode.Create, System.IO.FileAccess.ReadWrite);
+                stream.CopyTo(fs);
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine(ex.Message);
+            }
         }
     }
 }

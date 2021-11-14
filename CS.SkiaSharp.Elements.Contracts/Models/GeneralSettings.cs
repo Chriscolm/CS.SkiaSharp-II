@@ -19,6 +19,7 @@ namespace CS.SkiaSharpExample.Elements.Contracts.Models
         private float _perlinBaseFrequencyY = 0.005f;
         private int _perlinNumOctaves = 2;
         private bool _makeNoise;
+        private bool _autoSave;
 
         public string BackgroundColor
         {
@@ -149,6 +150,16 @@ namespace CS.SkiaSharpExample.Elements.Contracts.Models
             set
             {
                 _makeNoise = value;
+                Changed?.Invoke();
+            }
+        }
+
+        public bool AutoSave
+        {
+            get => _autoSave;
+            set
+            {
+                _autoSave = value;
                 Changed?.Invoke();
             }
         }

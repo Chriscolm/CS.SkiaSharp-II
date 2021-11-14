@@ -27,6 +27,10 @@
             <Button Content="Draw Circles"
                     Command="{Binding CreateCirclesCommand}" />
 
+            <Grid>
+                <CheckBox Content="Auto Save" IsChecked="{Binding Settings.AutoSave, UpdateSourceTrigger=PropertyChanged}" />
+            </Grid>
+
         </ToolBar>
 
         <ToolBar Band="1" BandIndex="1">
